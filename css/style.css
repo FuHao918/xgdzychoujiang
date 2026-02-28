@@ -1,0 +1,38 @@
+body{
+margin:0;
+font-family:Arial;
+background:url('/img/bg-desktop.png') no-repeat center center fixed;
+background-size:cover;
+color:#fff;
+}
+
+@media(max-width:768px){
+body{
+background:url('/img/bg-mobile.png') no-repeat center center fixed;
+background-size:cover;
+}
+}
+
+.wrap{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.card{
+background:rgba(0,0,0,0.6);
+padding:30px;
+border-radius:12px;
+text-align:center;
+}
+
+input{
+padding:10px;
+width:220px;
+margin:10px 0;
+}
+
+button{
+padding:10px 20px;
+}

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>抽奖页</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+<div class="wrap">
+  <div class="card">
+    <h2>抽奖页面</h2>
+    <p>当前资格码：</p>
+    <div id="result"></div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+document.getElementById('result').innerText = params.get('code');
+</script>
+</body>
+</html>
