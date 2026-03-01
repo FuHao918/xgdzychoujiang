@@ -1,6 +1,5 @@
 /* app.css (UTF-8, no BOM) */
-/* 主题：瓷白冷调 + 香槟金点缀（浅色高端），不依赖任何背景图片 */
-/* 功能红线：不涉及任何 JS / API / id，纯样式 */
+/* 解决全白：不使用负 z-index；背景用伪元素实现烟雾/金尘；强制反转 text-white */
 
 :root{
   color-scheme: light;
@@ -8,9 +7,8 @@
   --bg0:#F6F7FB;
   --bg1:#F2F4FA;
   --bg2:#EEF2F8;
+
   --ink:#121724;
-  --ink2:rgba(18, 23, 36, .72);
-  --ink3:rgba(18, 23, 36, .55);
 
   --panel: rgba(255,255,255,.72);
   --line: rgba(18, 23, 36, .10);
@@ -19,34 +17,22 @@
   --gold:#C9A24B;
   --gold2:#E9D6A4;
 
-  --r-xl: 22px;
-  --r-lg: 18px;
-  --r-md: 16px;
-
   --font-ui: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
   --font-brand: "Noto Serif SC", serif;
-
-  /* 字号（精细） */
-  --fz-logo-m: 18px;
-  --fz-logo-d: 22px;
-
-  --fz-h1-m: 24px;
-  --fz-h1-d: 34px;
-
-  --fz-body-m: 14px;
-  --fz-body-d: 15px;
-
-  --fz-input: 15px;
-  --fz-btn: 15px;
 }
 
 *{ font-family: var(--font-ui); }
 .title-font{ font-family: var(--font-brand); }
 
 html,body{ height:100%; }
-body{ background: var(--bg0); color: var(--ink); overflow-x:hidden; }
+body{
+  margin:0;
+  background: var(--bg0);
+  color: var(--ink);
+  overflow-x:hidden;
+}
 
-/* 兼容 HTML 里大量 text-white/xx：统一反转为深色 */
+/* ✅ 强制把 Tailwind 的白字反转为深色（否则白底白字=“全白”） */
 .text-white{ color: var(--ink) !important; }
 .text-white\/85{ color: rgba(18,23,36,.85) !important; }
 .text-white\/72{ color: rgba(18,23,36,.72) !important; }
@@ -59,9 +45,11 @@ body{ background: var(--bg0); color: var(--ink); overflow-x:hidden; }
 .text-white\/45{ color: rgba(18,23,36,.45) !important; }
 .text-white\/40{ color: rgba(18,23,36,.40) !important; }
 
-/* 背景层：纯渐变 */
+/* ✅ 背景层：全部非负 z-index（避免手机端 fixed + 负层被“压没”） */
 .bg{
-  position: fixed; inset: 0; z-index: -3;
+  position: fixed; inset: 0;
+  z-index: 0;
+  pointer-events:none;
   background:
     radial-gradient(1100px 700px at 16% 10%, rgba(201,162,75,0.10), transparent 58%),
     radial-gradient(900px 650px at 78% 14%, rgba(140,170,255,0.10), transparent 60%),
@@ -69,19 +57,11 @@ body{ background: var(--bg0); color: var(--ink); overflow-x:hidden; }
     linear-gradient(180deg, var(--bg0), var(--bg1) 45%, var(--bg2));
 }
 
-.veil{
-  position: fixed; inset: 0; z-index: -2;
-  background:
-    radial-gradient(900px 600px at 18% 10%, rgba(255,255,255,0.65), transparent 62%),
-    radial-gradient(900px 650px at 80% 18%, rgba(255,255,255,0.55), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,0.35), rgba(246,247,251,0.65));
-}
-
-/* 低调呼吸烟雾 */
-.smoke{
-  position: fixed; inset: -18vh -18vw; z-index: -1;
-  pointer-events:none;
-  opacity:.60;
+/* 轻烟雾 + 金尘：用伪元素实现（即使 HTML 没加 smoke/dust div 也有效） */
+.bg::before{
+  content:"";
+  position:absolute; inset:-18vh -18vw;
+  opacity:.58;
   filter: blur(18px);
   background:
     radial-gradient(60vw 40vh at 22% 42%, rgba(18,23,36,0.06), transparent 62%),
@@ -90,27 +70,39 @@ body{ background: var(--bg0); color: var(--ink); overflow-x:hidden; }
   animation: smokeDrift 10s ease-in-out infinite alternate;
 }
 @keyframes smokeDrift{
-  0%{ transform: translate3d(-1.2vw,-0.6vh,0) scale(1.02); opacity:.52; }
-  100%{ transform: translate3d(1.3vw,0.9vh,0) scale(1.04); opacity:.64; }
+  0%{ transform: translate3d(-1.2vw,-0.6vh,0) scale(1.02); opacity:.50; }
+  100%{ transform: translate3d(1.3vw,0.9vh,0) scale(1.04); opacity:.62; }
 }
 
-/* 金尘 */
-.dust{
-  position: fixed; inset:0; z-index:-1;
-  pointer-events:none;
+.bg::after{
+  content:"";
+  position:absolute; inset:0;
+  opacity:.45;
   background:
     radial-gradient(2px 2px at 12% 28%, rgba(201,162,75,0.22), transparent 60%),
     radial-gradient(2px 2px at 70% 22%, rgba(201,162,75,0.18), transparent 60%),
     radial-gradient(1.5px 1.5px at 55% 68%, rgba(18,23,36,0.14), transparent 60%),
     radial-gradient(1.5px 1.5px at 82% 72%, rgba(201,162,75,0.16), transparent 60%),
     radial-gradient(1.2px 1.2px at 28% 78%, rgba(18,23,36,0.10), transparent 60%);
-  opacity:.55;
   animation: dustTwinkle 6s ease-in-out infinite;
 }
 @keyframes dustTwinkle{
-  0%,100%{ filter: brightness(1.00); opacity:.40; }
-  50%{ filter: brightness(1.12); opacity:.62; }
+  0%,100%{ filter: brightness(1.00); opacity:.35; }
+  50%{ filter: brightness(1.12); opacity:.55; }
 }
+
+.veil{
+  position: fixed; inset: 0;
+  z-index: 1;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 600px at 18% 10%, rgba(255,255,255,0.65), transparent 62%),
+    radial-gradient(900px 650px at 80% 18%, rgba(255,255,255,0.55), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,0.35), rgba(246,247,251,0.65));
+}
+
+/* ✅ 内容层抬到最上面（不用改 HTML，通过选择器覆盖） */
+header, main { position: relative; z-index: 10; }
 
 /* 品牌标记 */
 .mark{
@@ -128,42 +120,14 @@ body{ background: var(--bg0); color: var(--ink); overflow-x:hidden; }
 
 /* 面板 */
 .panel{
-  border-radius: var(--r-xl);
+  border-radius: 22px;
   background: var(--panel);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
 }
 
-/* 字体/字号映射 */
-header .text-xl,
-header .text-2xl{
-  font-family: var(--font-brand);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  font-size: var(--fz-logo-m);
-  line-height: 1.15;
-}
-@media (min-width: 640px){
-  header .text-xl,
-  header .text-2xl{ font-size: var(--fz-logo-d); }
-}
-h1{
-  font-family: var(--font-brand);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  font-size: var(--fz-h1-m);
-  line-height: 1.12;
-}
-@media (min-width: 640px){
-  h1{ font-size: var(--fz-h1-d); }
-}
-p, li{ font-size: var(--fz-body-m); line-height: 1.6; }
-@media (min-width: 640px){
-  p, li{ font-size: var(--fz-body-d); }
-}
-
-/* 组件 */
+/* 小标签 */
 .badge-line{ display:flex; align-items:center; gap:10px; }
 .badge{
   font-size: 11px;
@@ -177,16 +141,15 @@ p, li{ font-size: var(--fz-body-m); line-height: 1.6; }
 }
 .sep{ flex:1; height:1px; background: rgba(18,23,36,0.10); }
 
+/* 表单 */
 .input{
   height: 48px;
-  border-radius: var(--r-md);
+  border-radius: 16px;
   padding: 0 16px;
   color: var(--ink);
   background: rgba(255,255,255,0.72);
   border: 1px solid rgba(18,23,36,0.14);
   outline: none;
-  font-size: var(--fz-input);
-  font-weight: 500;
 }
 .input::placeholder{ color: rgba(18,23,36,0.42); }
 .input:focus{
@@ -196,9 +159,8 @@ p, li{ font-size: var(--fz-body-m); line-height: 1.6; }
 
 .btn{
   height: 48px;
-  border-radius: var(--r-md);
+  border-radius: 16px;
   padding: 0 18px;
-  font-size: var(--fz-btn);
   font-weight: 800;
   letter-spacing: 0.06em;
   background: linear-gradient(135deg, var(--gold), var(--gold2));
@@ -211,8 +173,9 @@ p, li{ font-size: var(--fz-body-m); line-height: 1.6; }
 .btn:active{ transform: translateY(0); filter: brightness(0.99); }
 .btn[disabled]{ opacity:.65; cursor:not-allowed; transform:none; }
 
+/* 结果区 */
 .result{
-  border-radius: var(--r-lg);
+  border-radius: 18px;
   border: 1px solid rgba(18,23,36,0.10);
   background: rgba(255,255,255,0.62);
   padding: 16px;
@@ -237,7 +200,6 @@ p, li{ font-size: var(--fz-body-m); line-height: 1.6; }
   font-size: 20px;
   font-weight: 900;
   letter-spacing: 0.01em;
-  color: var(--ink);
 }
 .result-foot{
   margin-top: 10px;
@@ -248,27 +210,16 @@ p, li{ font-size: var(--fz-body-m); line-height: 1.6; }
 .divider{ height:1px; background: rgba(18,23,36,0.10); }
 
 .mini{
-  border-radius: var(--r-md);
+  border-radius: 16px;
   border: 1px solid rgba(18,23,36,0.10);
   background: rgba(255,255,255,0.55);
   padding: 12px 14px;
 }
-.mini-k{
-  font-size: 12px;
-  color: rgba(18,23,36,0.58);
-  letter-spacing: 0.06em;
-}
-.mini-v{
-  margin-top: 4px;
-  font-weight: 800;
-  color: rgba(18,23,36,0.88);
-}
+.mini-k{ font-size: 12px; color: rgba(18,23,36,0.58); letter-spacing: 0.06em; }
+.mini-v{ margin-top: 4px; font-weight: 800; color: rgba(18,23,36,0.88); }
 
-.li{
-  padding-left: 10px;
-  border-left: 2px solid rgba(201,162,75,0.22);
-}
+.li{ padding-left:10px; border-left:2px solid rgba(201,162,75,0.22); }
 
 @media (prefers-reduced-motion: reduce){
-  .smoke,.dust{ animation:none !important; }
+  .bg::before,.bg::after{ animation:none !important; }
 }
