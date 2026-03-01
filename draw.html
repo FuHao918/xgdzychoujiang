@@ -1,24 +1,182 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>抽奖页</title>
-<link rel="stylesheet" href="/css/style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>抽奖页</title>
+
+  <!-- 字体与首页一致（稳定、无需你额外操作） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- 不再引用 /css/style.css，避免你删小写 css 后出错 -->
+  <style>
+    :root{
+      color-scheme: light;
+      --bg0:#F6F7FB;
+      --bg1:#F2F4FA;
+      --bg2:#EEF2F8;
+      --ink:#121724;
+      --ink2: rgba(18,23,36,.72);
+      --line: rgba(18,23,36,.10);
+      --panel: rgba(255,255,255,.72);
+      --shadow: 0 22px 70px rgba(16, 20, 32, .12);
+      --gold:#C9A24B;
+      --gold2:#E9D6A4;
+      --r-xl: 22px;
+      --r-md: 16px;
+      --font-ui: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      --font-brand: "Noto Serif SC", serif;
+    }
+    *{ font-family: var(--font-ui); box-sizing: border-box; }
+    body{
+      margin:0; min-height:100vh; color: var(--ink);
+      background:
+        radial-gradient(1100px 700px at 16% 10%, rgba(201,162,75,0.10), transparent 58%),
+        radial-gradient(900px 650px at 78% 14%, rgba(140,170,255,0.10), transparent 60%),
+        radial-gradient(900px 900px at 50% 120%, rgba(18,23,36,0.06), transparent 62%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 45%, var(--bg2));
+      overflow:hidden;
+    }
+    /* 轻烟雾 + 金尘（克制） */
+    .smoke{
+      position:fixed; inset:-18vh -18vw; pointer-events:none;
+      opacity:.60; filter: blur(18px);
+      background:
+        radial-gradient(60vw 40vh at 22% 42%, rgba(18,23,36,0.06), transparent 62%),
+        radial-gradient(60vw 38vh at 70% 55%, rgba(201,162,75,0.06), transparent 62%),
+        radial-gradient(70vw 52vh at 55% 25%, rgba(140,170,255,0.06), transparent 65%);
+      animation: smokeDrift 10s ease-in-out infinite alternate;
+    }
+    @keyframes smokeDrift{
+      0%{ transform: translate3d(-1.2vw,-0.6vh,0) scale(1.02); opacity:.52; }
+      100%{ transform: translate3d(1.3vw,0.9vh,0) scale(1.04); opacity:.64; }
+    }
+    .dust{
+      position:fixed; inset:0; pointer-events:none; opacity:.55;
+      background:
+        radial-gradient(2px 2px at 12% 28%, rgba(201,162,75,0.22), transparent 60%),
+        radial-gradient(2px 2px at 70% 22%, rgba(201,162,75,0.18), transparent 60%),
+        radial-gradient(1.5px 1.5px at 55% 68%, rgba(18,23,36,0.14), transparent 60%),
+        radial-gradient(1.5px 1.5px at 82% 72%, rgba(201,162,75,0.16), transparent 60%),
+        radial-gradient(1.2px 1.2px at 28% 78%, rgba(18,23,36,0.10), transparent 60%);
+      animation: dustTwinkle 6s ease-in-out infinite;
+    }
+    @keyframes dustTwinkle{
+      0%,100%{ filter: brightness(1.00); opacity:.40; }
+      50%{ filter: brightness(1.12); opacity:.62; }
+    }
+
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 24px;
+      position:relative;
+      z-index:1;
+    }
+    .card{
+      width:min(560px, 100%);
+      border-radius: var(--r-xl);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 22px 22px;
+    }
+    h2{
+      margin:0;
+      font-family: var(--font-brand);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-size: 22px;
+      line-height: 1.15;
+    }
+    p{
+      margin: 10px 0 0;
+      color: var(--ink2);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .code{
+      margin-top: 14px;
+      padding: 14px 14px;
+      border-radius: var(--r-md);
+      border: 1px solid rgba(18,23,36,0.12);
+      background: rgba(255,255,255,0.72);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      font-size: 16px;
+      user-select: all;
+      word-break: break-all;
+    }
+    .btn{
+      margin-top: 14px;
+      width: 100%;
+      height: 46px;
+      border-radius: var(--r-md);
+      border: 1px solid rgba(18,23,36,0.10);
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      color: rgba(18,23,36,0.92);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      box-shadow: 0 16px 40px rgba(201,162,75,0.22);
+    }
+    .btn:active{ transform: translateY(1px); }
+    .hint{
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(18,23,36,0.52);
+    }
+    @media (prefers-reduced-motion: reduce){
+      .smoke,.dust{ animation:none !important; }
+    }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="card">
-    <h2>抽奖页面</h2>
-    <p>当前资格码：</p>
-    <div id="result"></div>
-  </div>
-</div>
+  <div class="smoke"></div>
+  <div class="dust"></div>
 
-<script>
-const params = new URLSearchParams(location.search);
-document.getElementById('result').innerText = params.get('code');
-</script>
+  <div class="wrap">
+    <div class="card">
+      <h2>抽奖页面</h2>
+      <p>当前资格码：</p>
+      <div class="code" id="result">-</div>
+      <button class="btn" id="copyBtn" type="button">点一下复制</button>
+      <div class="hint">提示：复制后回到首页点击“立即抽奖”，或直接用带码链接打开首页。</div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const code = (params.get('code') || '').trim();
+    const el = document.getElementById('result');
+    const btn = document.getElementById('copyBtn');
+
+    el.textContent = code || '未检测到 code 参数';
+
+    btn.addEventListener('click', async () => {
+      if (!code) return alert('没有可复制的资格码');
+      try{
+        await navigator.clipboard.writeText(code);
+        btn.textContent = '已复制 ✅';
+        setTimeout(()=> btn.textContent = '点一下复制', 1200);
+      }catch(e){
+        // 兼容老浏览器
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        btn.textContent = '已复制 ✅';
+        setTimeout(()=> btn.textContent = '点一下复制', 1200);
+      }
+    });
+  </script>
 </body>
 </html>
