@@ -3,148 +3,134 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>粉丝专享抽奖站 · 逍遥电子烟</title>
-  <meta name="description" content="逍遥电子烟粉丝专享抽奖站：输入资格码，核销并查看抽中奖品。" />
+  <title>抽奖页</title>
 
-  <!-- ✅ Telegram/社交预览（必须有，路径指向 /og/og.png） -->
-  <meta property="og:title" content="粉丝专享抽奖站 · 逍遥电子烟" />
-  <meta property="og:description" content="输入资格码，核销并查看抽中奖品。" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://xgdzychoujiang.fuhao.co/" />
-  <meta property="og:image" content="https://xgdzychoujiang.fuhao.co/og/og.png" />
-  <meta property="og:image:type" content="image/png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://xgdzychoujiang.fuhao.co/og/og.png" />
-
-  <!-- Tailwind 仅用于排版（不改功能） -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
 
-  <!-- ✅ 双路径都引（防大小写/目录混乱） -->
-  <link rel="stylesheet" href="/CSS/app.css?v=fix2" />
-  <link rel="stylesheet" href="/css/app.css?v=fix2" />
+  <style>
+    :root{ color-scheme: light; --ink:#121724; --gold:#C9A24B; --gold2:#E9D6A4; }
+    *{ box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+    body{
+      margin:0; min-height:100vh; color: var(--ink);
+      background:
+        radial-gradient(1400px 860px at 12% 8%, rgba(201,162,75,0.20), transparent 58%),
+        radial-gradient(1200px 820px at 78% 14%, rgba(140,170,255,0.18), transparent 62%),
+        radial-gradient(1200px 1200px at 50% 120%, rgba(18,23,36,0.10), transparent 64%),
+        linear-gradient(180deg, #F6F7FB, #F2F4FA 45%, #EEF2F8);
+      overflow:hidden;
+    }
+    .bg::before{
+      content:""; position:fixed; inset:-22vh -22vw; pointer-events:none;
+      opacity:.82; filter: blur(16px);
+      background:
+        radial-gradient(70vw 48vh at 18% 44%, rgba(18,23,36,0.10), transparent 62%),
+        radial-gradient(70vw 44vh at 72% 56%, rgba(201,162,75,0.10), transparent 62%),
+        radial-gradient(80vw 56vh at 55% 22%, rgba(140,170,255,0.10), transparent 65%);
+      animation: smokeDrift 9s ease-in-out infinite alternate;
+    }
+    .bg::after{
+      content:""; position:fixed; inset:0; pointer-events:none;
+      opacity:.70;
+      background:
+        radial-gradient(3px 3px at 12% 28%, rgba(201,162,75,0.35), transparent 60%),
+        radial-gradient(3px 3px at 70% 22%, rgba(201,162,75,0.30), transparent 60%),
+        radial-gradient(2px 2px at 55% 68%, rgba(18,23,36,0.18), transparent 60%),
+        radial-gradient(2px 2px at 82% 72%, rgba(201,162,75,0.26), transparent 60%);
+      animation: dustTwinkle 5s ease-in-out infinite;
+    }
+    @keyframes smokeDrift{
+      0%{ transform: translate3d(-1.6vw,-0.8vh,0) scale(1.03) rotate(-0.3deg); }
+      100%{ transform: translate3d(1.8vw,1.0vh,0) scale(1.06) rotate(0.3deg); }
+    }
+    @keyframes dustTwinkle{
+      0%,100%{ filter: brightness(1.00); opacity:.55; }
+      50%{ filter: brightness(1.18); opacity:.82; }
+    }
+
+    .wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; position:relative; z-index:2; }
+    .card{
+      width:min(560px, 100%);
+      border-radius: 22px;
+      background: rgba(255,255,255,.80);
+      border: 1px solid rgba(18,23,36,.10);
+      box-shadow: 0 28px 110px rgba(16,20,32,.16);
+      backdrop-filter: blur(12px);
+      padding: 22px;
+    }
+    h2{ margin:0; font-family:"Noto Serif SC",serif; font-weight:700; letter-spacing:-0.02em; font-size:22px; line-height:1.15; }
+    p{ margin:10px 0 0; color: rgba(18,23,36,.72); font-size:14px; line-height:1.6; }
+    .code{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(18,23,36,.12);
+      background: rgba(255,255,255,0.78);
+      font-weight:800;
+      letter-spacing:0.06em;
+      font-size:16px;
+      user-select:all;
+      word-break:break-all;
+    }
+    .btn{
+      margin-top:14px;
+      width:100%;
+      height:46px;
+      border-radius:16px;
+      border:1px solid rgba(18,23,36,.10);
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      color: rgba(18,23,36,0.92);
+      font-weight:900;
+      letter-spacing:0.06em;
+      cursor:pointer;
+      box-shadow: 0 16px 46px rgba(201,162,75,0.24);
+    }
+    .btn:active{ transform: translateY(1px); }
+    .hint{ margin-top:10px; font-size:12px; color: rgba(18,23,36,.52); }
+    @media (prefers-reduced-motion: reduce){
+      .bg::before,.bg::after{ animation:none !important; }
+    }
+  </style>
 </head>
 
-<body class="min-h-screen text-white antialiased">
-  <!-- 注意：我不要求你加 smoke/dust div，背景动效会通过 CSS 的伪元素实现 -->
+<body>
   <div class="bg"></div>
-  <div class="veil"></div>
-
-  <header class="max-w-6xl mx-auto px-5 sm:px-6 pt-7 pb-6">
-    <div class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="mark grid place-items-center">
-          <span class="mark-dot"></span>
-        </div>
-        <div class="min-w-0">
-          <div class="text-xs tracking-[0.24em] uppercase text-white/55">粉丝专享抽奖站</div>
-          <div class="text-xl sm:text-2xl font-semibold tracking-tight title-font">逍遥 · 电子烟</div>
-        </div>
-      </div>
-      <div class="hidden lg:block text-xs text-white/55 text-right leading-relaxed">
-        客服 @xgdzy6 · xgdzy9 / 频道 @xgdzy7 · @xgdzy777
-      </div>
+  <div class="wrap">
+    <div class="card">
+      <h2>抽奖页面</h2>
+      <p>当前资格码：</p>
+      <div class="code" id="result">-</div>
+      <button class="btn" id="copyBtn" type="button">点一下复制</button>
+      <div class="hint">提示：复制后回到首页点击“立即抽奖”，或直接用带码链接打开首页。</div>
     </div>
-  </header>
+  </div>
 
-  <main class="max-w-6xl mx-auto px-5 sm:px-6 pb-16">
-    <section class="grid lg:grid-cols-12 gap-6">
-      <div class="lg:col-span-7">
-        <div class="panel p-6 sm:p-8">
-          <div class="badge-line">
-            <div class="badge">Premium Access</div>
-            <div class="sep"></div>
-            <div class="text-xs text-white/55">资格码仅可使用一次</div>
-          </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const code = (params.get('code') || '').trim();
+    const el = document.getElementById('result');
+    const btn = document.getElementById('copyBtn');
 
-          <h1 class="mt-4 text-2xl sm:text-3xl font-semibold tracking-tight title-font">
-            有需要？找逍遥！西港一站式嗨品选购旗舰店
-          </h1>
+    el.textContent = code || '未检测到 code 参数';
 
-          <p class="mt-3 text-white/70 leading-relaxed">
-            请确认资格码来自逍遥电子烟官方客服。抽取后自动核销，同一资格码仅可使用一次。更多精彩活动请持续关注Telegram官方频道
-          </p>
-
-          <div class="mt-7 grid gap-3">
-            <label class="text-sm text-white/70" for="codeInput">资格码</label>
-            <div class="flex flex-col sm:flex-row gap-3">
-              <input id="codeInput" class="input flex-1" placeholder="例如：XGDZY999999" autocomplete="off" />
-              <button id="drawBtn" class="btn" type="button">立即抽奖</button>
-            </div>
-            <div class="text-xs text-white/45">
-              打开逍遥机器人生成的客户专属自带资格码链接会自动填入资格码（不会自动抽奖）。
-            </div>
-          </div>
-
-          <div id="resultWrap" class="mt-7 hidden">
-            <div class="result">
-              <div class="flex items-center justify-between gap-3">
-                <div class="result-title">惊喜结果</div>
-                <div class="result-chip" id="resultMeta"></div>
-              </div>
-              <div id="resultBox" class="result-body"></div>
-              <div class="result-foot">请将获奖结果截图发送给客服核实，无截图不兑付奖项！</div>
-            </div>
-          </div>
-
-          <div class="mt-7 grid sm:grid-cols-3 gap-3 text-sm">
-            <div class="mini">
-              <div class="mini-k">规则</div>
-              <div class="mini-v">资格码仅可使用一次</div>
-            </div>
-            <div class="mini">
-              <div class="mini-k">状态</div>
-              <div class="mini-v" id="statusText">等待输入</div>
-            </div>
-            <div class="mini">
-              <div class="mini-k">官方频道</div>
-              <div class="mini-v">@xgdzy7 · 777</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="lg:col-span-5">
-        <div class="panel p-6 sm:p-8 h-full">
-          <div class="text-sm text-white/70 title-font">惊喜表列</div>
-
-          <ul class="mt-4 space-y-3 text-white/72 text-sm leading-relaxed">
-            <li class="li">🥇 iPhone 17 Pro Max</li>
-            <li class="li">🥈500 USDT</li>
-            <li class="li">🥉7代智能皮革大屏杆子</li>
-            <li class="li">
-              🎁   3️⃣ 个电子烟弹🥚<br/>
-              🎁   2️⃣ 个电子烟弹🥚<br/>
-              🎁   1️⃣ 个电子烟弹🥚<br/><br/>
-              👍 3档可调电子烟杆<br/><br/>
-              🎟 立享 9 折优惠
-            </li>
-          </ul>
-
-          <div class="mt-8 divider"></div>
-
-          <div class="text-sm text-white/70 title-font">常见问题</div>
-          <div class="mt-4 space-y-4 text-white/72 text-sm leading-relaxed">
-            <div>
-              <div class="font-semibold text-white/85">为什么看不到结果？</div>
-              <div class="mt-1">请点一次“立即抽奖”。若网络慢，稍等 1-2 秒。</div>
-            </div>
-            <div>
-              <div class="font-semibold text-white/85">特别说明</div>
-              <div class="mt-1">请将获奖结果截图发送给客服核实，无截图不兑付奖项！</div>
-            </div>
-          </div>
-
-          <div class="mt-10 text-xs text-white/40">© 2026 逍遥电子烟</div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script src="/js/app.js"></script>
+    btn.addEventListener('click', async () => {
+      if (!code) return alert('没有可复制的资格码');
+      try{
+        await navigator.clipboard.writeText(code);
+        btn.textContent = '已复制 ✅';
+        setTimeout(()=> btn.textContent = '点一下复制', 1200);
+      }catch(e){
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        btn.textContent = '已复制 ✅';
+        setTimeout(()=> btn.textContent = '点一下复制', 1200);
+      }
+    });
+  </script>
 </body>
 </html>

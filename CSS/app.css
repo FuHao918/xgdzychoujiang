@@ -1,5 +1,5 @@
 /* app.css (UTF-8, no BOM) */
-/* 解决全白：不使用负 z-index；背景用伪元素实现烟雾/金尘；强制反转 text-white */
+/* 浅色高端：瓷白冷调 + 香槟金；特效可见；不使用负 z-index；兼容 Tailwind text-white */
 
 :root{
   color-scheme: light;
@@ -10,15 +10,25 @@
 
   --ink:#121724;
 
-  --panel: rgba(255,255,255,.72);
-  --line: rgba(18, 23, 36, .10);
-  --shadow: 0 22px 70px rgba(16, 20, 32, .12);
+  --panel: rgba(255,255,255,.80);
+  --line: rgba(18,23,36,.10);
+  --shadow: 0 28px 110px rgba(16,20,32,.16);
 
   --gold:#C9A24B;
   --gold2:#E9D6A4;
 
   --font-ui: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
   --font-brand: "Noto Serif SC", serif;
+
+  /* 精细字号（你要的分层） */
+  --fz-logo-m: 18px;
+  --fz-logo-d: 22px;
+  --fz-h1-m: 24px;
+  --fz-h1-d: 34px;
+  --fz-body-m: 14px;
+  --fz-body-d: 15px;
+  --fz-input: 15px;
+  --fz-btn: 15px;
 }
 
 *{ font-family: var(--font-ui); }
@@ -32,7 +42,7 @@ body{
   overflow-x:hidden;
 }
 
-/* ✅ 强制把 Tailwind 的白字反转为深色（否则白底白字=“全白”） */
+/* ✅ 把 Tailwind 的白字反转成深色（否则浅底会“像白屏”） */
 .text-white{ color: var(--ink) !important; }
 .text-white\/85{ color: rgba(18,23,36,.85) !important; }
 .text-white\/72{ color: rgba(18,23,36,.72) !important; }
@@ -45,77 +55,82 @@ body{
 .text-white\/45{ color: rgba(18,23,36,.45) !important; }
 .text-white\/40{ color: rgba(18,23,36,.40) !important; }
 
-/* ✅ 背景层：全部非负 z-index（避免手机端 fixed + 负层被“压没”） */
+/* ✅ 背景层：非负 z-index，永远可见 */
 .bg{
   position: fixed; inset: 0;
   z-index: 0;
   pointer-events:none;
+
   background:
-    radial-gradient(1100px 700px at 16% 10%, rgba(201,162,75,0.10), transparent 58%),
-    radial-gradient(900px 650px at 78% 14%, rgba(140,170,255,0.10), transparent 60%),
-    radial-gradient(900px 900px at 50% 120%, rgba(18,23,36,0.06), transparent 62%),
+    radial-gradient(1400px 860px at 12% 8%, rgba(201,162,75,0.20), transparent 58%),
+    radial-gradient(1200px 820px at 78% 14%, rgba(140,170,255,0.18), transparent 62%),
+    radial-gradient(1200px 1200px at 50% 120%, rgba(18,23,36,0.10), transparent 64%),
     linear-gradient(180deg, var(--bg0), var(--bg1) 45%, var(--bg2));
 }
 
-/* 轻烟雾 + 金尘：用伪元素实现（即使 HTML 没加 smoke/dust div 也有效） */
+/* 烟雾（可见但高级） */
 .bg::before{
   content:"";
-  position:absolute; inset:-18vh -18vw;
-  opacity:.58;
-  filter: blur(18px);
+  position:absolute; inset:-22vh -22vw;
+  opacity:.82;
+  filter: blur(16px);
   background:
-    radial-gradient(60vw 40vh at 22% 42%, rgba(18,23,36,0.06), transparent 62%),
-    radial-gradient(60vw 38vh at 70% 55%, rgba(201,162,75,0.06), transparent 62%),
-    radial-gradient(70vw 52vh at 55% 25%, rgba(140,170,255,0.06), transparent 65%);
-  animation: smokeDrift 10s ease-in-out infinite alternate;
+    radial-gradient(70vw 48vh at 18% 44%, rgba(18,23,36,0.10), transparent 62%),
+    radial-gradient(70vw 44vh at 72% 56%, rgba(201,162,75,0.10), transparent 62%),
+    radial-gradient(80vw 56vh at 55% 22%, rgba(140,170,255,0.10), transparent 65%);
+  animation: smokeDrift 9s ease-in-out infinite alternate;
 }
 @keyframes smokeDrift{
-  0%{ transform: translate3d(-1.2vw,-0.6vh,0) scale(1.02); opacity:.50; }
-  100%{ transform: translate3d(1.3vw,0.9vh,0) scale(1.04); opacity:.62; }
+  0%{ transform: translate3d(-1.6vw,-0.8vh,0) scale(1.03) rotate(-0.3deg); }
+  100%{ transform: translate3d(1.8vw,1.0vh,0) scale(1.06) rotate(0.3deg); }
 }
 
+/* 金尘（更明显但不土） */
 .bg::after{
   content:"";
   position:absolute; inset:0;
-  opacity:.45;
+  opacity:.70;
   background:
-    radial-gradient(2px 2px at 12% 28%, rgba(201,162,75,0.22), transparent 60%),
-    radial-gradient(2px 2px at 70% 22%, rgba(201,162,75,0.18), transparent 60%),
-    radial-gradient(1.5px 1.5px at 55% 68%, rgba(18,23,36,0.14), transparent 60%),
-    radial-gradient(1.5px 1.5px at 82% 72%, rgba(201,162,75,0.16), transparent 60%),
-    radial-gradient(1.2px 1.2px at 28% 78%, rgba(18,23,36,0.10), transparent 60%);
-  animation: dustTwinkle 6s ease-in-out infinite;
+    radial-gradient(3px 3px at 12% 28%, rgba(201,162,75,0.35), transparent 60%),
+    radial-gradient(3px 3px at 70% 22%, rgba(201,162,75,0.30), transparent 60%),
+    radial-gradient(2px 2px at 55% 68%, rgba(18,23,36,0.18), transparent 60%),
+    radial-gradient(2px 2px at 82% 72%, rgba(201,162,75,0.26), transparent 60%),
+    radial-gradient(1.5px 1.5px at 28% 78%, rgba(18,23,36,0.12), transparent 60%),
+    radial-gradient(1.5px 1.5px at 18% 62%, rgba(201,162,75,0.22), transparent 60%),
+    radial-gradient(1.5px 1.5px at 88% 46%, rgba(201,162,75,0.22), transparent 60%);
+  animation: dustTwinkle 5s ease-in-out infinite;
 }
 @keyframes dustTwinkle{
-  0%,100%{ filter: brightness(1.00); opacity:.35; }
-  50%{ filter: brightness(1.12); opacity:.55; }
+  0%,100%{ filter: brightness(1.00); opacity:.55; }
+  50%{ filter: brightness(1.18); opacity:.82; }
 }
 
+/* 高级镜头雾层 */
 .veil{
   position: fixed; inset: 0;
   z-index: 1;
   pointer-events:none;
   background:
-    radial-gradient(900px 600px at 18% 10%, rgba(255,255,255,0.65), transparent 62%),
-    radial-gradient(900px 650px at 80% 18%, rgba(255,255,255,0.55), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,0.35), rgba(246,247,251,0.65));
+    radial-gradient(900px 600px at 18% 10%, rgba(255,255,255,0.70), transparent 62%),
+    radial-gradient(900px 650px at 80% 18%, rgba(255,255,255,0.60), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,0.32), rgba(246,247,251,0.60));
 }
 
-/* ✅ 内容层抬到最上面（不用改 HTML，通过选择器覆盖） */
+/* 内容层抬高 */
 header, main { position: relative; z-index: 10; }
 
 /* 品牌标记 */
 .mark{
   width:40px; height:40px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.70);
   border: 1px solid var(--line);
-  box-shadow: 0 14px 40px rgba(16,20,32,0.10);
+  box-shadow: 0 16px 54px rgba(16,20,32,0.12);
 }
 .mark-dot{
   width:10px; height:10px; border-radius:999px;
   background: linear-gradient(135deg, var(--gold), var(--gold2));
-  box-shadow: 0 0 0 6px rgba(201,162,75,0.14);
+  box-shadow: 0 0 0 7px rgba(201,162,75,0.16);
 }
 
 /* 面板 */
@@ -124,10 +139,38 @@ header, main { position: relative; z-index: 10; }
   background: var(--panel);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
 }
 
-/* 小标签 */
+/* LOGO/主标题字号精细映射 */
+header .text-xl,
+header .text-2xl{
+  font-family: var(--font-brand);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: var(--fz-logo-m);
+  line-height: 1.15;
+}
+@media (min-width: 640px){
+  header .text-xl,
+  header .text-2xl{ font-size: var(--fz-logo-d); }
+}
+h1{
+  font-family: var(--font-brand);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: var(--fz-h1-m);
+  line-height: 1.12;
+}
+@media (min-width: 640px){
+  h1{ font-size: var(--fz-h1-d); }
+}
+p, li{ font-size: var(--fz-body-m); line-height: 1.6; }
+@media (min-width: 640px){
+  p, li{ font-size: var(--fz-body-d); }
+}
+
+/* 组件 */
 .badge-line{ display:flex; align-items:center; gap:10px; }
 .badge{
   font-size: 11px;
@@ -137,47 +180,48 @@ header, main { position: relative; z-index: 10; }
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid rgba(18,23,36,0.10);
-  background: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.55);
 }
 .sep{ flex:1; height:1px; background: rgba(18,23,36,0.10); }
 
-/* 表单 */
 .input{
   height: 48px;
   border-radius: 16px;
   padding: 0 16px;
   color: var(--ink);
-  background: rgba(255,255,255,0.72);
+  background: rgba(255,255,255,0.78);
   border: 1px solid rgba(18,23,36,0.14);
   outline: none;
+  font-size: var(--fz-input);
+  font-weight: 500;
 }
 .input::placeholder{ color: rgba(18,23,36,0.42); }
 .input:focus{
-  border-color: rgba(201,162,75,0.35);
-  box-shadow: 0 0 0 4px rgba(201,162,75,0.14);
+  border-color: rgba(201,162,75,0.42);
+  box-shadow: 0 0 0 5px rgba(201,162,75,0.16);
 }
 
 .btn{
   height: 48px;
   border-radius: 16px;
   padding: 0 18px;
+  font-size: var(--fz-btn);
   font-weight: 800;
   letter-spacing: 0.06em;
   background: linear-gradient(135deg, var(--gold), var(--gold2));
   color: rgba(18,23,36,0.92);
   border: 1px solid rgba(18,23,36,0.10);
-  box-shadow: 0 16px 40px rgba(201,162,75,0.22);
+  box-shadow: 0 16px 46px rgba(201,162,75,0.24);
   transition: transform .12s ease, filter .12s ease;
 }
 .btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
 .btn:active{ transform: translateY(0); filter: brightness(0.99); }
 .btn[disabled]{ opacity:.65; cursor:not-allowed; transform:none; }
 
-/* 结果区 */
 .result{
   border-radius: 18px;
   border: 1px solid rgba(18,23,36,0.10);
-  background: rgba(255,255,255,0.62);
+  background: rgba(255,255,255,0.64);
   padding: 16px;
 }
 .result-title{
@@ -190,7 +234,7 @@ header, main { position: relative; z-index: 10; }
   font-size: 12px;
   color: rgba(18,23,36,0.70);
   border: 1px solid rgba(18,23,36,0.10);
-  background: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.52);
   padding: 6px 10px;
   border-radius: 999px;
   white-space: nowrap;
@@ -212,13 +256,13 @@ header, main { position: relative; z-index: 10; }
 .mini{
   border-radius: 16px;
   border: 1px solid rgba(18,23,36,0.10);
-  background: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.58);
   padding: 12px 14px;
 }
 .mini-k{ font-size: 12px; color: rgba(18,23,36,0.58); letter-spacing: 0.06em; }
 .mini-v{ margin-top: 4px; font-weight: 800; color: rgba(18,23,36,0.88); }
 
-.li{ padding-left:10px; border-left:2px solid rgba(201,162,75,0.22); }
+.li{ padding-left: 10px; border-left: 2px solid rgba(201,162,75,0.22); }
 
 @media (prefers-reduced-motion: reduce){
   .bg::before,.bg::after{ animation:none !important; }
