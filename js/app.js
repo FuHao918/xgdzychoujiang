@@ -25,7 +25,6 @@
     btn.textContent = isLoading ? "抽奖中..." : "立即抽奖";
   }
 
-  // 仅自动填入，不自动抽奖
   (function prefillFromQuery() {
     try {
       const params = new URLSearchParams(location.search);
@@ -38,7 +37,7 @@
   async function drawPrize() {
     const code = (input?.value || "").trim();
     if (!code) {
-      setStatus("请先输入资格码");
+      setStatus("等待输入");
       alert("请输入资格码");
       return;
     }
@@ -52,9 +51,9 @@
 
       if (data && data.ok) {
         setStatus("成功");
-        showResult(data.prize || "🎉 恭喜获得奖品", `资格码：${code}`);
+        showResult(data.prize || "恭喜获得", `资格码：${code}`);
       } else {
-        const msg = (data && (data.msg || data.message)) || "抽奖码无效或已使用";
+        const msg = (data && (data.msg || data.message)) || "资格码无效或已使用";
         setStatus("失败");
         showResult(msg, `资格码：${code}`);
       }
@@ -68,7 +67,6 @@
 
   if (btn) btn.addEventListener("click", drawPrize);
 
-  // 允许回车触发
   if (input) {
     input.addEventListener("keydown", (ev) => {
       if (ev.key === "Enter") drawPrize();
