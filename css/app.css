@@ -1,0 +1,83 @@
+/* app.css (UTF-8, no BOM) */
+:root { color-scheme: dark; }
+* { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif; }
+
+body { background: #070A12; }
+.bg{
+  position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(900px 600px at 15% 10%, rgba(255,255,255,0.08), transparent 60%),
+    radial-gradient(800px 500px at 85% 20%, rgba(255,214,102,0.10), transparent 60%),
+    radial-gradient(900px 650px at 55% 90%, rgba(99,102,241,0.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.04), transparent 35%),
+    #070A12;
+}
+
+.card{
+  border-radius: 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  backdrop-filter: blur(10px);
+}
+
+.input{
+  height: 46px;
+  border-radius: 14px;
+  padding: 0 14px;
+  color: rgba(255,255,255,0.92);
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.12);
+  outline: none;
+}
+.input:focus{
+  border-color: rgba(255,214,102,0.35);
+  box-shadow: 0 0 0 4px rgba(255,214,102,0.12);
+}
+
+.btn{
+  height: 46px;
+  border-radius: 14px;
+  padding: 0 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  background: linear-gradient(135deg, rgba(255,214,102,0.95), rgba(255,255,255,0.85));
+  color: rgba(10,10,10,0.92);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 14px 30px rgba(255,214,102,0.18);
+  transition: transform .12s ease, filter .12s ease;
+}
+.btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+.btn:active{ transform: translateY(0px); filter: brightness(0.98); }
+.btn[disabled]{ opacity: .55; cursor: not-allowed; transform: none; }
+
+.result{
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.28);
+  padding: 14px 14px;
+}
+.result-title{
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+}
+.result-body{
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+.result-meta{
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.48);
+}
+
+.mini{
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.22);
+  padding: 10px 12px;
+}
+.mini-k{ font-size: 12px; color: rgba(255,255,255,0.55); }
+.mini-v{ margin-top: 2px; font-weight: 700; color: rgba(255,255,255,0.86); }
