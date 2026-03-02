@@ -15,7 +15,7 @@ async function draw(){
   btn.disabled = true;
 
   try{
-    const resp = await fetch(`/api/redeem?code=${encodeURIComponent(code)}`, {
+    const resp = await fetch(`https://xgdzychoujiang.fuhao.co/api/redeem?code=${encodeURIComponent(code)}`, {
       cache:"no-store"
     });
 
