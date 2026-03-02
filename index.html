@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>逍遥 · 电子烟抽奖站</title>
+<link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap flex">
+    <div class="logo">逍遥 · 电子烟</div>
+    <div class="mini">粉丝专享抽奖站</div>
+  </div>
+</header>
+
+<section class="hero wrap">
+  <h1>有需要？找逍遥。西港一站式嗨品选购旗舰店</h1>
+  <p>输入资格码后自动核销，每个资格码仅可使用一次。</p>
+</section>
+
+<section class="draw wrap">
+  <input id="codeInput" placeholder="输入资格码，例如 XGDZY9999"/>
+  <button id="drawBtn">立即抽奖</button>
+  <div id="statusText">等待输入</div>
+</section>
+
+<section class="result wrap" id="resultBox" style="display:none;"></section>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
