@@ -2,15 +2,16 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>抽奖页</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>复制资格码</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
 
-  <!-- 与首页同一套视觉（直接用首页 CSS） -->
+  <!-- 同样做双目录兼容 -->
   <link rel="stylesheet" href="/CSS/app.css" />
+  <link rel="stylesheet" href="/css/app.css" />
 </head>
 
 <body class="min-h-screen antialiased">
@@ -19,26 +20,32 @@
   <div class="smoke"></div>
   <div class="dust"></div>
 
-  <main class="max-w-2xl mx-auto px-5 sm:px-6 py-16">
+  <main class="max-w-2xl mx-auto px-5 sm:px-6 py-14">
     <div class="panel p-6 sm:p-8">
       <div class="badge-line">
-        <div class="badge">Premium Access</div>
+        <div class="badge">CODE</div>
         <div class="sep"></div>
-        <div class="text-xs text-white/55">复制后将跳回首页并带上资格码</div>
+        <div class="text-xs text-white/55">点一下复制并返回抽奖</div>
       </div>
 
-      <h1 class="mt-4 title-font" style="font-size:28px;line-height:1.1;">抽奖页面</h1>
-      <p class="mt-2 text-white/70">当前资格码：</p>
+      <h1 class="mt-4 text-2xl sm:text-3xl font-semibold tracking-tight title-font">
+        复制资格码
+      </h1>
 
-      <div class="modal-code" id="result">未检测到 code 参数</div>
+      <p class="mt-3 text-white/70 leading-relaxed">
+        复制后将自动跳转回首页，并自动填入资格码（不会自动抽奖）。
+      </p>
 
-      <div class="modal-actions" style="margin-top:14px;">
-        <button class="btn btn-ghost" id="copyBtn" type="button">点一下复制</button>
-        <button class="btn" id="goBtn" type="button">去抽奖</button>
+      <div class="mt-6">
+        <div class="text-sm text-white/70">当前资格码</div>
+        <div class="code-box" id="result">-</div>
       </div>
 
-      <div class="modal-tip" id="tip" style="margin-top:12px;">
-        提示：点击“点一下复制”后会自动跳转回首页，并自动填入输入框。
+      <div class="mt-5">
+        <button class="btn btn-wide" id="copyBtn" type="button">点一下复制并去抽奖</button>
+        <div class="mt-3 text-xs text-white/45">
+          如果你不想复制，也可以直接点上面按钮继续。
+        </div>
       </div>
     </div>
   </main>
@@ -46,59 +53,39 @@
   <script>
     const params = new URLSearchParams(location.search);
     const code = (params.get('code') || '').trim();
-
+    const v = (params.get('v') || '').trim();
     const el = document.getElementById('result');
-    const copyBtn = document.getElementById('copyBtn');
-    const goBtn = document.getElementById('goBtn');
-    const tip = document.getElementById('tip');
+    const btn = document.getElementById('copyBtn');
 
-    el.textContent = code ? code : '未检测到 code 参数';
+    el.textContent = code || '未检测到 code 参数';
 
-    async function copyText(text){
+    async function goHome(){
+      const u = new URL(location.origin + '/');
+      if (code) u.searchParams.set('code', code);
+      if (v) u.searchParams.set('v', v);
+      // 标记来自复制页（首页可用来滚动到输入框）
+      u.searchParams.set('from', 'draw');
+      location.href = u.toString();
+    }
+
+    async function copyAndGo(){
+      if (!code) return goHome();
       try{
-        await navigator.clipboard.writeText(text);
-        return true;
+        await navigator.clipboard.writeText(code);
       }catch(e){
-        try{
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          ta.setAttribute('readonly','');
-          ta.style.position='fixed';
-          ta.style.top='-9999px';
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          ta.remove();
-          return true;
-        }catch(_){
-          return false;
-        }
+        // 兼容方案
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
       }
+      btn.textContent = '已复制 ✅ 正在跳转…';
+      setTimeout(goHome, 450);
     }
 
-    function goHomeWithCode(){
-      if (!code){
-        location.href = '/';
-        return;
-      }
-      // 带时间戳让 Telegram 更容易刷新 & 防缓存
-      const v = Date.now();
-      location.href = `/?code=${encodeURIComponent(code)}&v=${v}#draw`;
-    }
-
-    copyBtn.addEventListener('click', async () => {
-      if (!code) { alert('没有可复制的资格码'); return; }
-      const ok = await copyText(code);
-      copyBtn.textContent = ok ? '已复制 ✅' : '复制失败';
-      tip.textContent = ok ? '已复制，正在返回首页...' : '复制失败，请手动返回首页。';
-      setTimeout(() => {
-        if (ok) goHomeWithCode();
-      }, 450);
-    });
-
-    goBtn.addEventListener('click', () => {
-      goHomeWithCode();
-    });
+    btn.addEventListener('click', copyAndGo);
   </script>
 </body>
 </html>

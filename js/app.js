@@ -9,131 +9,109 @@
   const resultBox = $("resultBox");
   const resultMeta = $("resultMeta");
 
-  // 动效层
-  const burst = $("burst");
-
-  // 进入弹窗
-  const codeModal = $("codeModal");
-  const modalCodeText = $("modalCodeText");
-  const modalCopy = $("modalCopy");
-  const modalGo = $("modalGo");
+  // 弹窗元素
+  const modal = $("modal");
+  const modalBadge = $("modalBadge");
+  const modalTitle = $("modalTitle");
+  const modalSub = $("modalSub");
+  const modalResultBox = $("modalResultBox");
   const modalClose = $("modalClose");
-  const modalBackdrop = $("modalBackdrop");
+  const modalOk = $("modalOk");
 
   function setStatus(t) {
     if (statusText) statusText.textContent = t;
   }
 
-  function showResult(text, meta) {
+  function showInlineResult(text, meta) {
     if (resultBox) resultBox.textContent = text;
     if (resultMeta) resultMeta.textContent = meta || "";
-    if (resultWrap) {
-      resultWrap.classList.remove("hidden");
-      // 触发一次结果弹出动效（CSS 用）
-      resultWrap.classList.remove("pop-on");
-      // 强制重排
-      void resultWrap.offsetWidth;
-      resultWrap.classList.add("pop-on");
-    }
+    if (resultWrap) resultWrap.classList.remove("hidden");
   }
 
   function setLoading(isLoading) {
     if (!btn) return;
     btn.disabled = isLoading;
-    const t = btn.querySelector(".btn-text");
-    if (t) t.textContent = isLoading ? "抽奖中..." : "立即抽奖";
-    else btn.textContent = isLoading ? "抽奖中..." : "立即抽奖";
-    if (isLoading) btn.classList.add("is-loading");
-    else btn.classList.remove("is-loading");
+    btn.textContent = isLoading ? "抽奖中..." : "立即抽奖";
+    document.documentElement.classList.toggle("is-drawing", !!isLoading);
   }
 
-  function triggerBurst() {
-    if (!burst) return;
-    burst.classList.remove("on");
-    void burst.offsetWidth;
-    burst.classList.add("on");
-    setTimeout(() => burst.classList.remove("on"), 900);
-  }
-
-  function openModal(code) {
-    if (!codeModal) return;
-    if (modalCodeText) modalCodeText.textContent = code;
-    codeModal.classList.remove("hidden");
-    codeModal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
+  function openModal() {
+    if (!modal) return;
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    document.documentElement.classList.add("modal-open");
   }
 
   function closeModal() {
-    if (!codeModal) return;
-    codeModal.classList.add("hidden");
-    codeModal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+    document.documentElement.classList.remove("modal-open");
   }
 
-  async function copyText(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch (e) {
-      try {
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        ta.setAttribute("readonly", "");
-        ta.style.position = "fixed";
-        ta.style.top = "-9999px";
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
+  function modalStateLoading(code) {
+    if (!modal) return;
+    modalBadge.textContent = "开奖中";
+    modalTitle.textContent = "正在开奖…";
+    modalSub.textContent = "请稍候 1-2 秒";
+    modalResultBox.innerHTML = `<div class="modal-hint">资格码：<b>${escapeHtml(code)}</b></div>`;
+    openModal();
+    modal.classList.remove("is-ok", "is-bad");
+    modal.classList.add("is-loading");
   }
 
-  // 读取 query：自动填入（不改变原逻辑）
-  let queryCode = "";
+  function modalStateOk(prize, code) {
+    modalBadge.textContent = "恭喜";
+    modalTitle.textContent = "开奖成功";
+    modalSub.textContent = "请截图发给客服核实";
+    modalResultBox.innerHTML = `
+      <div class="modal-prize">${escapeHtml(prize || "恭喜获得")}</div>
+      <div class="modal-hint">资格码：<b>${escapeHtml(code)}</b></div>
+    `;
+    modal.classList.remove("is-loading", "is-bad");
+    modal.classList.add("is-ok");
+    openModal();
+  }
+
+  function modalStateBad(msg, code) {
+    modalBadge.textContent = "提示";
+    modalTitle.textContent = "未能开奖";
+    modalSub.textContent = "请确认资格码是否正确，或是否已使用";
+    modalResultBox.innerHTML = `
+      <div class="modal-prize bad">${escapeHtml(msg || "资格码无效或已使用")}</div>
+      <div class="modal-hint">资格码：<b>${escapeHtml(code)}</b></div>
+    `;
+    modal.classList.remove("is-loading", "is-ok");
+    modal.classList.add("is-bad");
+    openModal();
+  }
+
+  function escapeHtml(s) {
+    return String(s || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  // 首页：从 URL 自动填入 code
   (function prefillFromQuery() {
     try {
       const params = new URLSearchParams(location.search);
-      queryCode = (params.get("code") || "").trim();
-      if (queryCode && input) input.value = queryCode;
-      if (queryCode) setStatus("已填入资格码");
+      const code = (params.get("code") || "").trim();
+      const from = (params.get("from") || "").trim();
+      if (code && input) input.value = code;
+      if (code) setStatus("已填入资格码");
+
+      // 从复制页回来：滚到输入框区域（体验更像“花钱做的”）
+      if (from === "draw" && input) {
+        setTimeout(() => {
+          input.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 250);
+      }
     } catch (_) {}
   })();
-
-  // ✅ 进入弹窗策略（成熟用户体验）：
-  // - 带 code 进入：弹窗提示并给“复制/去抽奖”
-  // - 不带 code：直接正常首页
-  (function showCodeModalIfNeeded() {
-    if (!queryCode) return;
-    // 延迟一点点，让页面先稳定渲染
-    setTimeout(() => openModal(queryCode), 120);
-  })();
-
-  // 弹窗事件
-  if (modalClose) modalClose.addEventListener("click", closeModal);
-  if (modalBackdrop) modalBackdrop.addEventListener("click", closeModal);
-
-  if (modalCopy) {
-    modalCopy.addEventListener("click", async () => {
-      if (!queryCode) return;
-      const ok = await copyText(queryCode);
-      modalCopy.textContent = ok ? "已复制 ✅" : "复制失败";
-      setTimeout(() => (modalCopy.textContent = "点一下复制"), 1200);
-    });
-  }
-
-  if (modalGo) {
-    modalGo.addEventListener("click", () => {
-      closeModal();
-      // 滚动到输入框
-      const el = $("draw");
-      if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      if (input) input.focus();
-    });
-  }
 
   async function drawPrize() {
     const code = (input?.value || "").trim();
@@ -143,7 +121,9 @@
       return;
     }
 
-    triggerBurst();
+    // 强烈开奖弹窗（开始）
+    modalStateLoading(code);
+
     setLoading(true);
     setStatus("请求中...");
 
@@ -153,25 +133,38 @@
 
       if (data && data.ok) {
         setStatus("成功");
-        showResult(data.prize || "恭喜获得", `资格码：${code}`);
+        // 弹窗展示为主
+        modalStateOk(data.prize || "恭喜获得", code);
+        // 同时写回页面（兼容你原结构）
+        showInlineResult(data.prize || "恭喜获得", `资格码：${code}`);
       } else {
         const msg = (data && (data.msg || data.message)) || "资格码无效或已使用";
         setStatus("失败");
-        showResult(msg, `资格码：${code}`);
+        modalStateBad(msg, code);
+        showInlineResult(msg, `资格码：${code}`);
       }
     } catch (e) {
       setStatus("网络异常");
-      showResult("网络异常，请稍后重试", `资格码：${code}`);
+      modalStateBad("网络异常，请稍后重试", code);
+      showInlineResult("网络异常，请稍后重试", `资格码：${code}`);
     } finally {
       setLoading(false);
     }
   }
 
   if (btn) btn.addEventListener("click", drawPrize);
-
   if (input) {
     input.addEventListener("keydown", (ev) => {
       if (ev.key === "Enter") drawPrize();
+    });
+  }
+
+  // 弹窗关闭
+  if (modalClose) modalClose.addEventListener("click", closeModal);
+  if (modalOk) modalOk.addEventListener("click", closeModal);
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target && e.target.classList.contains("modal-backdrop")) closeModal();
     });
   }
 })();
